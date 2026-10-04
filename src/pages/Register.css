@@ -66,6 +66,17 @@
   margin-right: var(--spacing-sm);
 }
 
+.payment-disabled-note {
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 146, 60, 0.05) 100%);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .register-page {
     min-height: auto;
@@ -78,5 +89,9 @@
 
   .register-placeholder {
     padding: var(--spacing-lg);
+  }
+
+  .payment-disabled-note {
+    font-size: 0.85rem;
   }
 }

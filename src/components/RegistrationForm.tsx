@@ -16,6 +16,9 @@ export interface RegistrationFormData {
   duprRating?: number;
   duprProfileUrl?: string;
   agreed?: boolean;
+  amount?: number;
+  paymentIntentId?: string;
+  paymentStatus?: 'pending' | 'processing' | 'succeeded' | 'failed';
 }
 
 interface RegistrationFormProps {

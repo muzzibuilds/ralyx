@@ -1,0 +1,93 @@
+.problem-section {
+  background-color: var(--primary-darker);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.problem-title {
+  font-size: 2.75rem;
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.problem-content {
+  width: 100%;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-2xl);
+}
+
+.problem-card {
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.02) 0%, rgba(0, 255, 0, 0.01) 100%);
+  transition: all var(--transition-base);
+}
+
+.problem-card:hover {
+  border-color: var(--accent-lime);
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.05) 0%, rgba(0, 255, 0, 0.02) 100%);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.problem-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.problem-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.problem-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .problem-title {
+    font-size: 2rem;
+  }
+
+  .problem-grid {
+    gap: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .problem-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .problem-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .problem-card {
+    padding: var(--spacing-lg);
+  }
+
+  .problem-icon {
+    font-size: 2rem;
+  }
+
+  .problem-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .problem-card p {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,142 @@
+.founding-section {
+  background-color: var(--primary-darker);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.founding-header {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+}
+
+.founding-header h2 {
+  color: var(--accent-lime);
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  margin-bottom: var(--spacing-lg);
+}
+
+.founding-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-xl);
+}
+
+.founding-capacity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-xl);
+}
+
+.capacity-filled {
+  color: var(--accent-lime);
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.capacity-sep {
+  color: var(--text-tertiary);
+}
+
+.capacity-max {
+  color: var(--text-secondary);
+}
+
+.capacity-text {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin-left: var(--spacing-md);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.spots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.spot-card {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  border: 2px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.01) 0%, rgba(0, 255, 0, 0.005) 100%);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.spot-card:hover {
+  border-color: var(--accent-lime);
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.08) 0%, rgba(0, 255, 0, 0.03) 100%);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
+  transform: scale(1.02);
+}
+
+.spot-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-lime);
+}
+
+.spot-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.founding-note {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .founding-header h2 {
+    font-size: 2rem;
+  }
+
+  .spots-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .founding-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .founding-capacity {
+    font-size: 1.5rem;
+  }
+
+  .spots-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .spot-card {
+    aspect-ratio: 1;
+  }
+
+  .spot-number {
+    font-size: 1.1rem;
+  }
+
+  .spot-status {
+    font-size: 0.65rem;
+  }
+}

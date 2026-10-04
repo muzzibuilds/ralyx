@@ -1,0 +1,41 @@
+/* Card Component Styles */
+
+.card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.card--default {
+  background-color: rgba(0, 255, 0, 0.01);
+  border: 1px solid var(--border-light);
+}
+
+.card--default:hover {
+  border-color: var(--accent-lime);
+  background-color: rgba(0, 255, 0, 0.02);
+}
+
+.card--elevated {
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.03) 0%, rgba(0, 255, 0, 0.01) 100%);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card--elevated:hover {
+  border-color: var(--accent-lime);
+  box-shadow: 0 8px 12px rgba(0, 255, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card--highlighted {
+  background: linear-gradient(135deg, rgba(0, 255, 0, 0.08) 0%, rgba(0, 255, 0, 0.03) 100%);
+  border: 2px solid var(--accent-lime);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-md);
+  }
+}

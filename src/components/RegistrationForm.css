@@ -1,0 +1,124 @@
+/* Registration Form Styles */
+
+.registration-form {
+  width: 100%;
+}
+
+.registration-form__container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.registration-form__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.registration-form__description {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  margin: 0 0 32px 0;
+}
+
+.registration-form__error-banner {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid #ff4444;
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: #ff6666;
+  font-size: 14px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.registration-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.registration-form__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+}
+
+.registration-form__input {
+  padding: 12px 14px;
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  color: #ddd;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.registration-form__input:focus {
+  outline: none;
+  border-color: #ffff00;
+  box-shadow: 0 0 12px rgba(255, 255, 0, 0.15);
+  background: #0f0f0f;
+}
+
+.registration-form__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.registration-form__input--error {
+  border-color: #ff4444;
+  background: rgba(255, 68, 68, 0.05);
+}
+
+.registration-form__input--error:focus {
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.15);
+  border-color: #ff4444;
+}
+
+.registration-form__error {
+  font-size: 12px;
+  color: #ff6666;
+  display: block;
+}
+
+.registration-form__hint {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.registration-form__actions {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.registration-form__full-message {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  margin: 0;
+}
+
+.registration-form__footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #2a2a2a;
+  text-align: center;
+}
+
+.registration-form__terms {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}

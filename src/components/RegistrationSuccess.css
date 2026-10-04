@@ -1,0 +1,81 @@
+/* Registration Success Screen Styles */
+
+.registration-success {
+  width: 100%;
+  padding: 40px 24px;
+}
+
+.registration-success__container {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.registration-success__icon {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.registration-success__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffff00;
+  margin: 0 0 12px 0;
+}
+
+.registration-success__message {
+  font-size: 16px;
+  color: #ddd;
+  margin: 0 0 32px 0;
+}
+
+.registration-success__details {
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.registration-success__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.registration-success__detail-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+}
+
+.registration-success__detail-value {
+  font-size: 14px;
+  color: #ddd;
+  line-height: 1.5;
+}
+
+.registration-success__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.registration-success__actions .btn {
+  flex: 1;
+}
+
+.registration-success__footer {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}

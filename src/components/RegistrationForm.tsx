@@ -5,14 +5,17 @@
 
 import { useState, useRef } from 'react';
 import DuprLinkModal from './DuprLinkModal';
+import RegistrationConfirm from './RegistrationConfirm';
 import './RegistrationForm.css';
 
 export interface RegistrationFormData {
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
   duprRating?: number;
   duprProfileUrl?: string;
+  agreed?: boolean;
 }
 
 interface RegistrationFormProps {
@@ -34,12 +37,15 @@ export default function RegistrationForm({
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     duprRating: undefined,
     duprProfileUrl: undefined,
+    agreed: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isDuprModalOpen, setIsDuprModalOpen] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const validateForm = (): boolean => {
@@ -56,18 +62,54 @@ export default function RegistrationForm({
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Enter a valid email address';
     }
+    if (formData.phone && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+      newErrors.phone = 'Enter a valid phone number (10 digits)';
+    }
+    if (!formData.agreed) {
+      newErrors.agreed = 'You must agree to the league rules to proceed';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'number' ? (value ? parseFloat(value) : undefined) : value,
-    }));
-
+    const { name, value, type, checked } = e.target;
+    
+    if (type === 'checkbox') {
+      setFormData((prev) => ({
+        ...prev,
+        agreed: checked,
+      }));
+    } else if (name === 'phone') {
+      // Auto-format phone number: (123) 456-7890
+      const cleaned = value.replace(/\D/g, '');
+      let formatted = cleaned;
+      if (cleaned.length > 0) {
+        if (cleaned.length <= 3) {
+          formatted = cleaned;
+        } else if (cleaned.length <= 6) {
+          formatted = `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+        } else {
+          formatted = `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+        }
+      }
+      setFormData((prev) => ({
+        ...prev,
+        phone: formatted,
+      }));
+    } else if (type === 'number') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value ? parseFloat(value) : undefined,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+    
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => {
@@ -106,6 +148,11 @@ export default function RegistrationForm({
       return;
     }
 
+    // Show confirmation screen instead of submitting directly
+    setShowConfirm(true);
+  };
+
+  const handleConfirmation = async () => {
     try {
       await onSubmit(formData);
     } catch (err) {
@@ -122,7 +169,16 @@ export default function RegistrationForm({
 
   return (
     <>
-      <form ref={formRef} className="registration-form" onSubmit={handleSubmit}>
+      {showConfirm ? (
+        <RegistrationConfirm
+          data={formData}
+          onConfirm={handleConfirmation}
+          onEdit={() => setShowConfirm(false)}
+          isLoading={isLoading}
+          isFull={isFull}
+        />
+      ) : (
+        <form ref={formRef} className="registration-form" onSubmit={handleSubmit}>
         <div className="registration-form__container">
           {/* Header with DUPR Badge */}
           <div className="registration-form__header">
@@ -218,6 +274,29 @@ export default function RegistrationForm({
             )}
           </div>
 
+          {/* Phone Field */}
+          <div className="registration-form__group">
+            <label className="registration-form__label">Phone (Optional)</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone || ''}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={`registration-form__input ${
+                errors.phone && touched.phone ? 'registration-form__input--error' : ''
+              }`}
+              placeholder="(123) 456-7890"
+              disabled={isLoading}
+            />
+            {errors.phone && touched.phone && (
+              <span className="registration-form__error">{errors.phone}</span>
+            )}
+            <p className="registration-form__hint">
+              We'll use this to contact you about your registration.
+            </p>
+          </div>
+
           {/* DUPR Section */}
           <div className="registration-form__dupr-section">
             {formData.duprProfileUrl && formData.duprRating !== undefined ? (
@@ -261,6 +340,26 @@ export default function RegistrationForm({
             )}
           </div>
 
+          {/* Agreement Checkbox */}
+          <div className="registration-form__agreement">
+            <input
+              type="checkbox"
+              name="agreed"
+              id="agreed"
+              checked={formData.agreed || false}
+              onChange={handleChange}
+              className="registration-form__checkbox"
+              disabled={isLoading}
+              required
+            />
+            <label htmlFor="agreed" className="registration-form__agreement-label">
+              I agree to RALYX league rules and competitive format *
+            </label>
+            {errors.agreed && (
+              <span className="registration-form__error registration-form__error--block">{errors.agreed}</span>
+            )}
+          </div>
+
           {/* Submit Actions */}
           <div className="registration-form__actions">
             {isFull ? (
@@ -295,7 +394,8 @@ export default function RegistrationForm({
             </p>
           </div>
         </div>
-      </form>
+        </form>
+      )}
 
       {/* DUPR Link Modal */}
       <DuprLinkModal

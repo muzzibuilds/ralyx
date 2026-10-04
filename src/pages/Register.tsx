@@ -55,7 +55,7 @@ export default function RegisterPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          phone: '',
+          phone: formData.phone || '',
           duprRating: formData.duprRating || 0,
           preferredDay: undefined,
         });
@@ -80,9 +80,9 @@ export default function RegisterPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          phone: '',
+          phone: formData.phone || '',
           duprRating: formData.duprRating || 0,
-          duprProfileUrl: '',
+          duprProfileUrl: formData.duprProfileUrl || '',
         });
         playerId = newPlayer.id;
       }
@@ -120,7 +120,7 @@ export default function RegisterPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        phone: '',
+        phone: formData.phone || '',
         duprRating: formData.duprRating || 0,
         preferredDay: undefined,
       });

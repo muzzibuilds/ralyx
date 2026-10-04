@@ -1,0 +1,164 @@
+/* Registration Confirmation Screen Styles */
+
+.registration-confirm {
+  width: 100%;
+  padding: 40px 24px;
+}
+
+.registration-confirm__container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.registration-confirm__header {
+  margin-bottom: 32px;
+}
+
+.registration-confirm__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+
+.registration-confirm__description {
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+.registration-confirm__sections {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.registration-confirm__section {
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.registration-confirm__section--highlight {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(76, 175, 80, 0.02) 100%);
+  border-color: rgba(76, 175, 80, 0.15);
+}
+
+.registration-confirm__section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffff00;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.registration-confirm__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.registration-confirm__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.registration-confirm__field--full {
+  grid-column: 1 / -1;
+}
+
+.registration-confirm__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+}
+
+.registration-confirm__value {
+  font-size: 15px;
+  color: #ddd;
+  margin: 0;
+  font-weight: 500;
+}
+
+.registration-confirm__dupr-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 0, 0.05) 0%, rgba(255, 255, 0, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 0, 0.15);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.registration-confirm__dupr-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.registration-confirm__dupr-details {
+  flex: 1;
+}
+
+.registration-confirm__dupr-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+  margin: 0;
+}
+
+.registration-confirm__dupr-value {
+  font-size: 20px;
+  color: #ffff00;
+  font-weight: 700;
+  margin: 4px 0 0 0;
+}
+
+.registration-confirm__terms-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.registration-confirm__terms-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.registration-confirm__terms-text {
+  font-size: 14px;
+  color: #ddd;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.registration-confirm__terms-subtext {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+.registration-confirm__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.registration-confirm__actions .btn {
+  flex: 1;
+}

@@ -273,6 +273,51 @@
   font-weight: 600;
 }
 
+/* Agreement Section Styles */
+
+.registration-form__agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 0, 0.03);
+  border: 1px solid rgba(255, 255, 0, 0.1);
+  border-radius: 6px;
+}
+
+.registration-form__checkbox {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #ffff00;
+  flex-shrink: 0;
+}
+
+.registration-form__checkbox:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.registration-form__agreement-label {
+  font-size: 13px;
+  color: #ddd;
+  cursor: pointer;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.registration-form__agreement-label:hover {
+  color: #fff;
+}
+
+.registration-form__error--block {
+  display: block;
+  margin-top: 8px;
+}
+
 .registration-form__footer {
   margin-top: 24px;
   padding-top: 24px;

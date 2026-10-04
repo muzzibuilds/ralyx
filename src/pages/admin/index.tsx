@@ -1,40 +1,34 @@
 /**
- * Admin stub pages for Phase 2 scaffolding
+ * Admin page exports
  */
 
-import { Container, Section } from '../../components/ui';
-
-const PageTemplate = ({ title }: { title: string }) => (
-  <Section>
-    <Container>
-      <h1>{title}</h1>
-      <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--spacing-lg)' }}>
-        This page will be implemented in later phases.
-      </p>
-    </Container>
-  </Section>
-);
-
-export function PlayersPage() {
-  return <PageTemplate title="Players Management" />;
-}
-
-export function RegistrationsPage() {
-  return <PageTemplate title="Registrations" />;
-}
-
-export function DemandQueuePage() {
-  return <PageTemplate title="Demand Queue" />;
-}
+export { PlayersPage } from './PlayersPage';
+export { RegistrationsPage } from './RegistrationsPage';
+export { DemandQueuePage } from './DemandQueuePage';
 
 export function WeeksPage() {
-  return <PageTemplate title="Weeks & Matches" />;
+  return (
+    <div style={{ padding: '32px' }}>
+      <h1>Weeks & Matches</h1>
+      <p style={{ color: '#999' }}>Coming in Phase 5 (Session Management)</p>
+    </div>
+  );
 }
 
 export function ResultsPage() {
-  return <PageTemplate title="Results" />;
+  return (
+    <div style={{ padding: '32px' }}>
+      <h1>Results</h1>
+      <p style={{ color: '#999' }}>Coming in Phase 7 (Results & Standings)</p>
+    </div>
+  );
 }
 
 export function SettingsPage() {
-  return <PageTemplate title="Settings" />;
+  return (
+    <div style={{ padding: '32px' }}>
+      <h1>Settings</h1>
+      <p style={{ color: '#999' }}>Season configuration coming soon</p>
+    </div>
+  );
 }

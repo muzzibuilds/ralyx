@@ -1,0 +1,51 @@
+/* Admin Form Styles */
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-form__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  font-weight: 600;
+}
+
+.admin-form__input,
+.admin-form__select,
+.admin-form__textarea {
+  padding: 10px 12px;
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: #ddd;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.admin-form__input:focus,
+.admin-form__select:focus,
+.admin-form__textarea:focus {
+  outline: none;
+  border-color: #ffff00;
+  box-shadow: 0 0 8px rgba(255, 255, 0, 0.2);
+}
+
+.admin-form__textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.admin-form__error {
+  font-size: 12px;
+  color: #ff4444;
+}

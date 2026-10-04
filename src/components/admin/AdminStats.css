@@ -1,0 +1,38 @@
+/* Admin Stats Styles */
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-stat {
+  padding: 20px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  text-align: center;
+}
+
+.admin-stat__value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffff00;
+  margin-bottom: 8px;
+}
+
+.admin-stat__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+}
+
+.admin-stat--up .admin-stat__value {
+  color: #00ff00;
+}
+
+.admin-stat--down .admin-stat__value {
+  color: #ff4444;
+}

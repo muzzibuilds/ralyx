@@ -1,5 +1,18 @@
 {
+  "functions": {
+    "api/[[...route]].ts": {
+      "maxDuration": 10
+    }
+  },
   "rewrites": [
+    {
+      "source": "/webhooks/(.*)",
+      "destination": "/api/webhooks/$1"
+    },
+    {
+      "source": "/health/(.*)",
+      "destination": "/api/health/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

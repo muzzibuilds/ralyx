@@ -74,10 +74,11 @@ RALYX is a production-ready platform for league operators to manage:
 - Tables: players, registrations, standings, seasons, matches, sessions, payments, admin_users
 
 ### Deployment Ready
-- Frontend: Supabase Hosting or Vercel
-- Backend: Node.js (self-hosted or Fly.io/Heroku)
+- Frontend: Vercel Hobby
+- Backend: Vercel serverless functions
 - Database: Supabase PostgreSQL
 - Payments: Stripe (live mode)
+- Email: Resend free tier (optional)
 
 ## 📦 Installation
 
@@ -122,6 +123,7 @@ cp .env.example .env
 
 # Update with your values:
 # STRIPE_SECRET_KEY
+# STRIPE_WEBHOOK_SECRET
 # SUPABASE_URL
 # SUPABASE_SERVICE_ROLE_KEY
 # FRONTEND_URL
@@ -269,8 +271,8 @@ vercel deploy
 ```
 
 Notes:
-- [vercel.json](vercel.json) includes SPA rewrites so client-side routes like `/standings` and `/admin` resolve correctly.
-- Set `VITE_BACKEND_URL` to the deployed backend origin before production builds.
+- [vercel.json](vercel.json) includes SPA rewrites plus serverless routing for `/api`, `/webhooks`, and `/health`.
+- For single-project Vercel deployment, leave `VITE_BACKEND_URL` unset in production so the frontend uses same-origin API routes.
 
 ### Backend Deployment
 ```bash
@@ -291,7 +293,8 @@ git push heroku main
 ```
 
 Notes:
-- [server/Dockerfile](server/Dockerfile) supports container-based deployment on Fly.io, Railway, Render, or any Docker host.
+- Default free path: deploy the frontend and API together on Vercel Hobby using [api/[[...route]].ts](api/[[...route]].ts).
+- [server/Dockerfile](server/Dockerfile) remains available for Docker hosts if needed later.
 - Use [server/.dockerignore](server/.dockerignore) to keep build context small and avoid shipping secrets.
 - Health probes are available at [server/src/routes/health.routes.ts](server/src/routes/health.routes.ts): `/health` and `/health/ready`.
 
@@ -314,12 +317,23 @@ Notes:
 1. Deploy database schema from [src/lib/database.schema.sql](src/lib/database.schema.sql)
 2. Apply production RLS from [supabase/rls_setup.sql](supabase/rls_setup.sql)
 3. Add first admin user in `admin_users`
-4. Deploy backend with production env vars
-5. Verify `GET /health/ready` returns `ready`
-6. Deploy frontend with production `VITE_BACKEND_URL`
+4. Create a Vercel project connected to this repo
+5. Add production env vars in Vercel and Supabase
+6. Deploy and verify `GET /health/ready` returns `ready`
 7. Configure Stripe webhook to `POST /webhooks/stripe`
 8. Tune backend rate limits for production traffic
 9. Run smoke tests for registration, payment, waitlist, admin login, and results entry
+
+## 💸 Free Deployment Path
+
+- Frontend + backend API: Vercel Hobby
+- Database + auth: Supabase free tier
+- Transactional email: Resend free tier
+- Payments: Stripe has no monthly fee, but payment processing fees apply on live transactions
+
+This keeps the platform on hobby/free tiers for initial launch, subject to provider limits and pricing changes.
+
+For the exact launch sequence, use [DEPLOY_FREE.md](DEPLOY_FREE.md).
 
 ## 🎯 Next Steps (Recommended)
 

@@ -1,6 +1,6 @@
 import type { PaymentIntentResponse, PaymentResult, InvoiceData, InvoiceItem } from '../types/stripe';
+import { apiUrl } from '../lib/api';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
 /**
@@ -14,7 +14,7 @@ export async function createPaymentIntent(
   registrationId?: string
 ): Promise<PaymentIntentResponse> {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/payments/create-intent`, {
+    const response = await fetch(apiUrl('/api/payments/create-intent'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -51,7 +51,7 @@ export async function confirmPayment(
   registrationId: string
 ): Promise<PaymentResult> {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/payments/confirm`, {
+    const response = await fetch(apiUrl('/api/payments/confirm'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

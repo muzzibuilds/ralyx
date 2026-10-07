@@ -22,6 +22,7 @@ import { playerService } from '../services/players.service';
 import { demandService } from '../services/demand.service';
 import { registrationService } from '../services/registrations.service';
 import { confirmPayment, generateInvoiceData, calculateRegistrationFee } from '../services/stripeService';
+import { apiUrl } from '../lib/api';
 import type { RegistrationFormData } from '../components/RegistrationForm';
 import './Register.css';
 
@@ -39,8 +40,6 @@ interface PendingRegistration {
   registrationId?: string;
   paymentIntentId?: string;
 }
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export default function RegisterPage() {
   const queryClient = useQueryClient();
@@ -61,7 +60,7 @@ export default function RegisterPage() {
 
   const notifyWaitlistConfirmation = async (formData: RegistrationFormData, seasonName: string) => {
     try {
-      await fetch(`${BACKEND_URL}/api/notifications/waitlist-confirmation`, {
+      await fetch(apiUrl('/api/notifications/waitlist-confirmation'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

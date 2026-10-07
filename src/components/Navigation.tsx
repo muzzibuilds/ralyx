@@ -32,6 +32,14 @@ export default function Navigation() {
           </li>
           <li>
             <button
+              onClick={() => navigate(ROUTES.STANDINGS)}
+              className="nav-link"
+            >
+              Standings
+            </button>
+          </li>
+          <li>
+            <button
               onClick={() => scrollToSection('founding-16')}
               className="nav-link"
             >

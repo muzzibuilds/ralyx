@@ -1,0 +1,290 @@
+/**
+ * Standings Page Styles
+ */
+
+.standings-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  color: #e0e0e0;
+  padding: 2rem 1rem;
+}
+
+.standings-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.standings-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #d4ff00;
+  text-shadow: 0 0 20px rgba(212, 255, 0, 0.3);
+}
+
+.season-info {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+  margin-top: 0.5rem;
+}
+
+/* Loading & Error States */
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #a0a0a0;
+}
+
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  border-left: 4px solid #ff6b6b;
+  border-radius: 4px;
+  max-width: 1200px;
+  margin: 2rem auto;
+}
+
+/* No Standings State */
+.no-standings {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 255, 0, 0.2);
+  border-radius: 8px;
+}
+
+.no-standings p {
+  margin: 0.5rem 0;
+  font-size: 1.05rem;
+}
+
+.no-standings .secondary {
+  color: #808080;
+  font-size: 0.95rem;
+}
+
+/* Table Wrapper */
+.standings-table-wrapper {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 255, 0, 0.15);
+}
+
+/* Table */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.standings-table thead {
+  background: linear-gradient(90deg, rgba(212, 255, 0, 0.1), rgba(212, 255, 0, 0.05));
+  border-bottom: 2px solid rgba(212, 255, 0, 0.3);
+}
+
+.standings-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #d4ff00;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.standings-table th.rank,
+.standings-table th.other {
+  text-align: center;
+}
+
+.standings-table tbody tr {
+  border-bottom: 1px solid rgba(212, 255, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.standings-table tbody tr:hover {
+  background-color: rgba(212, 255, 0, 0.08);
+}
+
+.standings-table tbody tr.even {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.standings-table td {
+  padding: 1rem;
+  color: #e0e0e0;
+}
+
+.standings-table td.rank,
+.standings-table td.other {
+  text-align: center;
+}
+
+/* Rank Badge */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4ff00, #7fff00);
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Player Info */
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.player-email {
+  font-size: 0.85rem;
+  color: #808080;
+}
+
+/* Record */
+.record-text {
+  font-weight: 600;
+  color: #d4ff00;
+  display: block;
+}
+
+.win-pct {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  display: block;
+}
+
+/* Points */
+.points-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #d4ff00;
+}
+
+/* DUPR Rating */
+.dupr-rating {
+  font-weight: 600;
+  color: #60ff00;
+}
+
+.no-rating {
+  color: #606060;
+}
+
+/* Stats Summary */
+.standings-stats {
+  max-width: 1200px;
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(212, 255, 0, 0.1), rgba(127, 255, 0, 0.05));
+  border: 1px solid rgba(212, 255, 0, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #d4ff00;
+  text-shadow: 0 0 10px rgba(212, 255, 0, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .standings-container {
+    padding: 1rem;
+  }
+
+  .standings-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .season-info {
+    font-size: 0.9rem;
+  }
+
+  .standings-table {
+    font-size: 0.85rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .standings-table th.other,
+  .standings-table td.other {
+    display: none;
+  }
+
+  .rank-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .standings-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .standings-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .standings-table {
+    font-size: 0.8rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.6rem 0.3rem;
+  }
+
+  .player-name {
+    font-size: 0.9rem;
+  }
+
+  .record-text {
+    font-size: 0.95rem;
+  }
+
+  .points-value {
+    font-size: 1rem;
+  }
+}

@@ -3,6 +3,7 @@ import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
 import HomePage from './pages/Home';
 import RegisterPage from './pages/Register';
+import StandingsPage from './pages/Standings';
 import AdminDashboard from './pages/admin/Dashboard';
 import {
   PlayersPage,
@@ -23,8 +24,8 @@ function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route path={ROUTES.HOME} element={<HomePage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-        {/* Future: <Route path={ROUTES.RESULTS} element={<ResultsPage />} />
-            <Route path={ROUTES.STANDINGS} element={<StandingsPage />} /> */}
+        <Route path={ROUTES.STANDINGS} element={<StandingsPage />} />
+        {/* Future: <Route path={ROUTES.RESULTS} element={<ResultsPage />} /> */}
       </Route>
 
       {/* Admin Routes */}

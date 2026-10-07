@@ -3,7 +3,7 @@
  * Redirects unauthenticated users to login
  */
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { Navigate } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 

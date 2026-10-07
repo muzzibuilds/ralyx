@@ -9,6 +9,13 @@ import { AdminStatsGrid } from '../../components/admin';
 import { Card } from '../../components/ui';
 import './AdminPage.css';
 
+const DASHBOARD_DATE_LABEL = new Date().toLocaleDateString(undefined, {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
 export default function AdminDashboard() {
   const { data: season } = useCurrentSeason();
   const { data: registrations = [] } = useSeasonRegistrations(season?.id || '');
@@ -52,14 +59,7 @@ export default function AdminDashboard() {
     <div className="admin-page">
       <div className="admin-page__header">
         <h1>Admin Dashboard</h1>
-        <p style={{ color: '#999', margin: '0' }}>
-          {new Date().toLocaleDateString(undefined, {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-        </p>
+        <p style={{ color: '#999', margin: '0' }}>{DASHBOARD_DATE_LABEL}</p>
       </div>
 
       <AdminStatsGrid stats={stats} />

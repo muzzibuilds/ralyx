@@ -7,7 +7,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Button from '../components/ui/Button';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import './Layout.css';
 import { ROUTES } from '../config/routes';
 

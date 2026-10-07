@@ -1,0 +1,272 @@
+.weeks-page__subtitle {
+  margin: 8px 0 0;
+  color: #999;
+}
+
+.weeks-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+
+.weeks-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 255, 0, 0.14);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.weeks-panel--empty {
+  text-align: center;
+  color: #999;
+}
+
+.weeks-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.weeks-sidebar__header h2,
+.weeks-editor__header h2,
+.weeks-roster-panel h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.weeks-sidebar__header p,
+.weeks-editor__header p {
+  margin: 8px 0 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.weeks-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weeks-session-card {
+  width: 100%;
+  text-align: left;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px;
+  color: #ddd;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.weeks-session-card:hover,
+.weeks-session-card--active {
+  border-color: rgba(212, 255, 0, 0.5);
+  transform: translateY(-1px);
+}
+
+.weeks-session-card__top,
+.weeks-session-card__meta,
+.weeks-toolbar,
+.weeks-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weeks-session-card__meta {
+  margin-top: 10px;
+  color: #999;
+  font-size: 13px;
+}
+
+.weeks-status {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.weeks-status--scheduled {
+  background: rgba(100, 150, 255, 0.18);
+  color: #8fb0ff;
+}
+
+.weeks-status--in_progress {
+  background: rgba(255, 190, 0, 0.18);
+  color: #ffda73;
+}
+
+.weeks-status--completed {
+  background: rgba(96, 255, 0, 0.12);
+  color: #b8ff7a;
+}
+
+.weeks-content {
+  min-width: 0;
+}
+
+.weeks-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.weeks-editor__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.weeks-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.weeks-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weeks-field span {
+  color: #c7c7c7;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.weeks-field input,
+.weeks-field select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0d0d0d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.weeks-toolbar__actions,
+.weeks-toolbar__summary,
+.weeks-footer__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.weeks-warning {
+  color: #ffcf5a;
+}
+
+.weeks-ok {
+  color: #9cff65;
+}
+
+.weeks-roster-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.weeks-roster-panel {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.weeks-player-list,
+.weeks-courts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.weeks-player-row {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  color: #ddd;
+}
+
+.weeks-player-row--selected {
+  border-color: rgba(212, 255, 0, 0.4);
+  background: rgba(212, 255, 0, 0.08);
+}
+
+.weeks-player-row strong,
+.weeks-court-card li span {
+  display: block;
+}
+
+.weeks-player-row span,
+.weeks-court-card li small,
+.weeks-court-card__rotation small,
+.weeks-muted,
+.weeks-footer__message {
+  color: #999;
+  font-size: 13px;
+}
+
+.weeks-court-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.weeks-court-card__header,
+.weeks-court-card__rotation {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.weeks-court-card__header {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.weeks-court-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weeks-court-card__rotation {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-direction: column;
+  color: #d4ff00;
+}
+
+@media (max-width: 1100px) {
+  .weeks-layout,
+  .weeks-roster-grid,
+  .weeks-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .weeks-editor__header,
+  .weeks-toolbar,
+  .weeks-footer,
+  .weeks-session-card__top,
+  .weeks-session-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

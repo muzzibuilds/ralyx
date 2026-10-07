@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "RALYX Backend - Payment processing and API server",
   "type": "module",
-  "main": "src/server.ts",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "node --loader tsx src/server.ts",
+    "start": "node dist/server.js",
     "build": "tsc",
     "lint": "oxlint"
   },

@@ -230,6 +230,16 @@ npm run build
 npm start
 ```
 
+### Docker Deployment
+```bash
+docker build -t ralyx-backend ./server
+docker run --env-file ./server/.env -p 3001:3001 ralyx-backend
+```
+
+### Health Checks
+- `GET /health` - liveness
+- `GET /health/ready` - readiness / env validation
+
 ### Environment for Production
 1. Set all required environment variables
 2. Use production Stripe keys (sk_live_...)
@@ -237,6 +247,8 @@ npm start
 4. Set HTTPS for webhook endpoints
 5. Configure proper logging and monitoring
 6. Add Resend credentials to enable transactional emails
+7. Point Stripe webhooks to `/webhooks/stripe`
+8. Verify `/health/ready` before routing traffic
 
 ## 🐛 Debugging
 

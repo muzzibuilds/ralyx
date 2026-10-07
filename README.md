@@ -263,12 +263,19 @@ npm run build
 vercel deploy
 ```
 
+Notes:
+- [vercel.json](vercel.json) includes SPA rewrites so client-side routes like `/standings` and `/admin` resolve correctly.
+- Set `VITE_BACKEND_URL` to the deployed backend origin before production builds.
+
 ### Backend Deployment
 ```bash
 cd server
 
 # Build
 npm run build
+
+# Start production server locally
+npm start
 
 # Deploy to Fly.io/Heroku/Self-hosted
 fly deploy
@@ -277,6 +284,11 @@ heroku create ralyx-api
 heroku config:set STRIPE_SECRET_KEY=sk_...
 git push heroku main
 ```
+
+Notes:
+- [server/Dockerfile](server/Dockerfile) supports container-based deployment on Fly.io, Railway, Render, or any Docker host.
+- Use [server/.dockerignore](server/.dockerignore) to keep build context small and avoid shipping secrets.
+- Health probes are available at [server/src/routes/health.routes.ts](server/src/routes/health.routes.ts): `/health` and `/health/ready`.
 
 ## 📋 API Endpoints
 
@@ -290,6 +302,18 @@ git push heroku main
 
 ### Health
 - `GET /health` - Health check
+- `GET /health/ready` - Readiness check for required backend env vars
+
+## ✅ Production Rollout Order
+
+1. Deploy database schema from [src/lib/database.schema.sql](src/lib/database.schema.sql)
+2. Apply production RLS from [supabase/rls_setup.sql](supabase/rls_setup.sql)
+3. Add first admin user in `admin_users`
+4. Deploy backend with production env vars
+5. Verify `GET /health/ready` returns `ready`
+6. Deploy frontend with production `VITE_BACKEND_URL`
+7. Configure Stripe webhook to `POST /webhooks/stripe`
+8. Run smoke tests for registration, payment, waitlist, admin login, and results entry
 
 ## 🎯 Next Steps (Recommended)
 

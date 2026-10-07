@@ -4,6 +4,7 @@ import AdminLayout from './layouts/AdminLayout';
 import HomePage from './pages/Home';
 import RegisterPage from './pages/Register';
 import StandingsPage from './pages/Standings';
+import LoginPage from './pages/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import {
   PlayersPage,
@@ -13,6 +14,7 @@ import {
   ResultsPage,
   SettingsPage,
 } from './pages/admin';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ROUTES } from './config/routes';
 import { QueryProvider } from './lib/query.tsx';
 import { AuthProvider } from './context/AuthContext';
@@ -28,8 +30,18 @@ function AppRoutes() {
         {/* Future: <Route path={ROUTES.RESULTS} element={<ResultsPage />} /> */}
       </Route>
 
-      {/* Admin Routes */}
-      <Route path={ROUTES.ADMIN} element={<AdminLayout />}>
+      {/* Login Route */}
+      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+
+      {/* Admin Routes (Protected) */}
+      <Route 
+        path={ROUTES.ADMIN} 
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
         <Route path={ROUTES.ADMIN_PLAYERS} element={<PlayersPage />} />
         <Route path={ROUTES.ADMIN_REGISTRATIONS} element={<RegistrationsPage />} />

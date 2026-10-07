@@ -7,8 +7,8 @@ export const ROUTES = {
   // Public routes
   HOME: '/',
   REGISTER: '/register',
-  RESULTS: '/results',
   STANDINGS: '/standings',
+  LOGIN: '/login',
   
   // Admin routes
   ADMIN: '/admin',

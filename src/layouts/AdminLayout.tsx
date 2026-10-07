@@ -7,11 +7,13 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Button from '../components/ui/Button';
+import { useAuth } from '../context/AuthContext';
 import './Layout.css';
 import { ROUTES } from '../config/routes';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const { signOut, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const adminNavItems = [
@@ -23,6 +25,15 @@ export default function AdminLayout() {
     { label: 'Results', href: ROUTES.ADMIN_RESULTS },
     { label: 'Settings', href: ROUTES.ADMIN_SETTINGS },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate(ROUTES.HOME);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   return (
     <div className="admin-layout">
@@ -38,8 +49,16 @@ export default function AdminLayout() {
           >
             {sidebarOpen ? '✕' : '☰'}
           </button>
+          {user && (
+            <span className="admin-header__user">
+              {user.email}
+            </span>
+          )}
           <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.HOME)}>
             Back to Site
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            Sign Out
           </Button>
         </div>
       </header>

@@ -1,0 +1,151 @@
+/**
+ * Login Page Styles
+ */
+
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 255, 0, 0.2);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #d4ff00;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 0 20px rgba(212, 255, 0, 0.3);
+}
+
+.login-header p {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+/* Error Message */
+.login-error {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  color: #ff9999;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d4ff00;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 255, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #e0e0e0;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-group input:hover {
+  border-color: rgba(212, 255, 0, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #d4ff00;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(212, 255, 0, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #707070;
+}
+
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Login Footer */
+.login-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  border-top: 1px solid rgba(212, 255, 0, 0.1);
+  padding-top: 1.5rem;
+}
+
+.login-footer p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.text-secondary {
+  color: #808080;
+}
+
+/* Button inside form */
+.login-form__submit {
+  width: 100%;
+}
+
+.login-form button {
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 1.5rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-header p {
+    font-size: 0.9rem;
+  }
+
+  .form-group input {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+  }
+}

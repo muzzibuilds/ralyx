@@ -205,15 +205,22 @@ FRONTEND_URL=http://localhost:5173
 - ✅ CORS headers configured
 - ✅ TypeScript strict mode (prevents type issues)
 - ✅ Environment variable protection
+- ✅ Production RLS script in [supabase/rls_setup.sql](supabase/rls_setup.sql)
 
 ### Roadmap
-- [ ] Row-Level Security (RLS) policies implementation
+- [ ] Apply RLS script in Supabase project
 - [ ] Rate limiting
 - [ ] 2FA for admin accounts
 - [ ] Audit logging
 - [ ] Data encryption at rest
 
 **For full security documentation**, see [SECURITY.md](./SECURITY.md)
+
+### Supabase Security Apply Order
+1. Run [src/lib/database.schema.sql](src/lib/database.schema.sql)
+2. Run [supabase/rls_setup.sql](supabase/rls_setup.sql)
+3. Insert your admin user into `admin_users`
+4. Verify public registration and admin dashboard flows
 
 ## 🧪 Testing
 

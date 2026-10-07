@@ -1,7 +1,9 @@
 /**
  * RALYX Database Schema
  * 
- * Run this SQL in the Supabase SQL editor to set up the database
+ * Run this SQL in the Supabase SQL editor to set up the database.
+ * Then run supabase/rls_setup.sql for production-ready policies,
+ * admin access control, and payment tables.
  * 
  * Tables:
  * - seasons
@@ -218,6 +220,8 @@ CREATE INDEX idx_standings_rank ON standings(season_id, rank);
 
 -- ============================================================
 -- ENABLE ROW LEVEL SECURITY (RLS)
+-- NOTE: baseline policies below are development-friendly.
+-- For production, run supabase/rls_setup.sql after this file.
 -- ============================================================
 
 ALTER TABLE seasons ENABLE ROW LEVEL SECURITY;

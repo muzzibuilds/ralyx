@@ -325,6 +325,7 @@ if (!isAdmin && !isOwner) {
 
 ## Implementation Checklist
 
+- [x] Create production SQL script: [supabase/rls_setup.sql](supabase/rls_setup.sql)
 - [ ] Enable RLS on all tables
 - [ ] Create base policies for each table
 - [ ] Test policies with different user roles
@@ -369,6 +370,16 @@ const allRegistrations = await supabase
 ```
 
 ## Deployment Checklist
+
+### SQL Apply Order
+
+1. Run [src/lib/database.schema.sql](src/lib/database.schema.sql)
+2. Run [supabase/rls_setup.sql](supabase/rls_setup.sql)
+3. Insert at least one admin into `public.admin_users`
+4. Validate:
+  - public registration insert works
+  - admin login can read/write protected tables
+  - service-role backend can manage `payments`
 
 ### Pre-Production
 

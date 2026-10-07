@@ -88,7 +88,6 @@ export interface Session {
   weekNumber: number;
   sessionDate: Date;
   status: 'scheduled' | 'in_progress' | 'completed';
-  attendees: string[]; // Player IDs
   createdAt: Date;
   updatedAt: Date;
 }

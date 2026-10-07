@@ -8,3 +8,5 @@ export { useSeason, useSeasons, useCurrentSeason, useCreateSeason, useUpdateSeas
 export { useDemandLeads, useDemandLeadsCount, useCreateDemandLead, useDeleteDemandLead } from './useDemand';
 export { useSeasonStandings, usePlayerStanding, useTopPlayersByWins, useStandingsByCourt, useUpsertStanding } from './useStanding';
 export { useSeasonSessions, useSession, useCreateSession, useUpdateSession, useDeleteSession } from './useSession';
+export { useSessionCourtAssignments, useReplaceSessionAssignments } from './useCourtAssignment';
+export { useScorecardMatches, useGenerateSessionMatches, useRecordMatchResult } from './useMatch';

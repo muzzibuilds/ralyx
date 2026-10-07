@@ -1,6 +1,6 @@
 /**
  * Weeks & Matches Page
- * Create weekly sessions, assign players, and preview court groupings
+ * Create weekly sessions, assign players, and auto-generate matches
  */
 
 import { useMemo, useState } from 'react';
@@ -9,11 +9,15 @@ import {
   useCreateSession,
   useCurrentSeason,
   useDeleteSession,
+  useGenerateSessionMatches,
+  useReplaceSessionAssignments,
   useSeasonRegistrations,
   useSeasonSessions,
   useSeasonStandings,
+  useSessionCourtAssignments,
   useUpdateSession,
 } from '../../hooks';
+import type { CourtAssignmentRecord } from '../../services/courtAssignments.service';
 import './AdminPage.css';
 import './WeeksPage.css';
 
@@ -26,7 +30,6 @@ type PlayerOption = {
   email: string;
   duprRating: number | null;
   standingRank?: number;
-  status: string;
 };
 
 type SessionRow = {
@@ -34,7 +37,6 @@ type SessionRow = {
   week_number: number;
   session_date: string;
   status: SessionStatus;
-  attendees?: string[] | null;
 };
 
 type StandingRow = {
@@ -43,7 +45,6 @@ type StandingRow = {
 };
 
 type RegistrationRow = {
-  id: string;
   status: string;
   players?: {
     id: string;
@@ -76,9 +77,14 @@ function buildCourtGroups(players: PlayerOption[]) {
   return groups;
 }
 
+function getAssignmentAttendees(assignments: CourtAssignmentRecord[]) {
+  return [...new Set(assignments.flatMap((assignment) => assignment.players))];
+}
+
 interface SessionEditorProps {
   selectedSession: SessionRow;
   playerPool: PlayerOption[];
+  initialAttendees: string[];
   saveMessage: string;
   saving: boolean;
   onDelete: () => Promise<void>;
@@ -94,6 +100,7 @@ interface SessionEditorProps {
 function SessionEditor({
   selectedSession,
   playerPool,
+  initialAttendees,
   saveMessage,
   saving,
   onDelete,
@@ -102,7 +109,7 @@ function SessionEditor({
   const [weekNumber, setWeekNumber] = useState<number>(selectedSession.week_number);
   const [sessionDate, setSessionDate] = useState<string>(selectedSession.session_date.split('T')[0]);
   const [status, setStatus] = useState<SessionStatus>(selectedSession.status);
-  const [attendees, setAttendees] = useState<string[]>(selectedSession.attendees ?? []);
+  const [attendees, setAttendees] = useState<string[]>(initialAttendees);
 
   const selectedPlayers = useMemo(
     () => playerPool.filter((player) => attendees.includes(player.id)),
@@ -110,6 +117,8 @@ function SessionEditor({
   );
 
   const courtGroups = useMemo(() => buildCourtGroups(selectedPlayers), [selectedPlayers]);
+  const fullCourts = courtGroups.filter((group) => group.length === 4).length;
+  const incompleteCourts = courtGroups.filter((group) => group.length > 0 && group.length < 4).length;
 
   const toggleAttendee = (playerId: string) => {
     setAttendees((current) =>
@@ -118,16 +127,6 @@ function SessionEditor({
         : [...current, playerId],
     );
   };
-
-  const fillConfirmedPlayers = () => {
-    setAttendees(playerPool.slice(0, 16).map((player) => player.id));
-  };
-
-  const clearAttendees = () => {
-    setAttendees([]);
-  };
-
-  const capacityWarning = attendees.length % 4 !== 0;
 
   return (
     <>
@@ -163,19 +162,23 @@ function SessionEditor({
 
       <div className="weeks-toolbar">
         <div className="weeks-toolbar__actions">
-          <Button variant="secondary" onClick={fillConfirmedPlayers} disabled={playerPool.length === 0 || saving}>
+          <Button
+            variant="secondary"
+            onClick={() => setAttendees(playerPool.slice(0, 16).map((player) => player.id))}
+            disabled={playerPool.length === 0 || saving}
+          >
             Fill Top 16
           </Button>
-          <Button variant="ghost" onClick={clearAttendees} disabled={attendees.length === 0 || saving}>
+          <Button variant="ghost" onClick={() => setAttendees([])} disabled={attendees.length === 0 || saving}>
             Clear Roster
           </Button>
         </div>
         <div className="weeks-toolbar__summary">
           <span>{attendees.length} selected</span>
-          {capacityWarning && attendees.length > 0 ? (
-            <span className="weeks-warning">Not divisible by 4</span>
+          {incompleteCourts > 0 ? (
+            <span className="weeks-warning">{incompleteCourts} incomplete court(s)</span>
           ) : (
-            <span className="weeks-ok">Court-ready</span>
+            <span className="weeks-ok">{fullCourts * 2} matches ready</span>
           )}
         </div>
       </div>
@@ -191,11 +194,7 @@ function SessionEditor({
                 const checked = attendees.includes(player.id);
                 return (
                   <label key={player.id} className={`weeks-player-row${checked ? ' weeks-player-row--selected' : ''}`}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleAttendee(player.id)}
-                    />
+                    <input type="checkbox" checked={checked} onChange={() => toggleAttendee(player.id)} />
                     <div>
                       <strong>{player.firstName} {player.lastName}</strong>
                       <span>
@@ -235,7 +234,7 @@ function SessionEditor({
                   </ul>
                   {group.length === 4 && (
                     <div className="weeks-court-card__rotation">
-                      <span>Suggested pairings</span>
+                      <span>Auto-generated matches</span>
                       <small>{group[0].lastName}/{group[3].lastName} vs {group[1].lastName}/{group[2].lastName}</small>
                       <small>{group[0].lastName}/{group[2].lastName} vs {group[1].lastName}/{group[3].lastName}</small>
                     </div>
@@ -266,7 +265,7 @@ function SessionEditor({
             }
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Save Session'}
+            {saving ? 'Saving...' : 'Save + Generate Matches'}
           </Button>
         </div>
       </div>
@@ -283,6 +282,8 @@ export function WeeksPage() {
   const createSession = useCreateSession();
   const updateSession = useUpdateSession();
   const deleteSession = useDeleteSession();
+  const replaceAssignments = useReplaceSessionAssignments();
+  const generateMatches = useGenerateSessionMatches();
 
   const [selectedSessionId, setSelectedSessionId] = useState<string>('');
   const [saveMessage, setSaveMessage] = useState<string>('');
@@ -290,6 +291,10 @@ export function WeeksPage() {
   const typedSessions = sessions as SessionRow[];
   const typedRegistrations = registrations as RegistrationRow[];
   const typedStandings = standings as StandingRow[];
+
+  const activeSessionId = selectedSessionId || typedSessions[0]?.id || '';
+  const { data: assignments = [] } = useSessionCourtAssignments(activeSessionId);
+  const typedAssignments = assignments as CourtAssignmentRecord[];
 
   const playerPool = useMemo<PlayerOption[]>(() => {
     const standingMap = new Map(typedStandings.map((standing) => [standing.player_id, standing.rank ?? Number.MAX_SAFE_INTEGER]));
@@ -299,17 +304,14 @@ export function WeeksPage() {
       .flatMap((registration) => {
         if (!registration.players) return [];
 
-        return [
-          {
-            id: registration.players.id,
-            firstName: registration.players.first_name,
-            lastName: registration.players.last_name,
-            email: registration.players.email,
-            duprRating: registration.players.dupr_rating ?? null,
-            standingRank: standingMap.get(registration.players.id),
-            status: registration.status,
-          },
-        ];
+        return [{
+          id: registration.players.id,
+          firstName: registration.players.first_name,
+          lastName: registration.players.last_name,
+          email: registration.players.email,
+          duprRating: registration.players.dupr_rating ?? null,
+          standingRank: standingMap.get(registration.players.id),
+        }];
       })
       .sort((a, b) => {
         const rankA = a.standingRank ?? Number.MAX_SAFE_INTEGER;
@@ -319,8 +321,6 @@ export function WeeksPage() {
         return (b.duprRating ?? 0) - (a.duprRating ?? 0);
       });
   }, [typedRegistrations, typedStandings]);
-
-  const activeSessionId = selectedSessionId || typedSessions[0]?.id || '';
 
   const selectedSession = useMemo(
     () => typedSessions.find((sessionItem) => sessionItem.id === activeSessionId) ?? null,
@@ -341,11 +341,10 @@ export function WeeksPage() {
         weekNumber: nextWeekNumber,
         sessionDate: new Date(TODAY_INPUT_VALUE),
         status: 'scheduled',
-        attendees: [],
       });
 
       setSelectedSessionId(created.id);
-      setSaveMessage('Session created. Add attendees and save.');
+      setSaveMessage('Week created. Add players and save to auto-generate matches.');
     } catch (error) {
       console.error('Error creating session:', error);
       setSaveMessage('Unable to create session right now.');
@@ -366,13 +365,20 @@ export function WeeksPage() {
           weekNumber: payload.weekNumber,
           sessionDate: new Date(payload.sessionDate),
           status: payload.status,
-          attendees: payload.attendees,
         },
       });
-      setSaveMessage('Session saved successfully.');
+
+      const groups = buildCourtGroups(
+        playerPool.filter((player) => payload.attendees.includes(player.id)),
+      ).map((group) => group.map((player) => player.id));
+
+      await replaceAssignments.mutateAsync({ sessionId: payload.id, groups });
+      const generated = await generateMatches.mutateAsync(payload.id);
+
+      setSaveMessage(`Session saved. ${generated.length} matches generated automatically.`);
     } catch (error) {
       console.error('Error saving session:', error);
-      setSaveMessage('Unable to save session changes.');
+      setSaveMessage(error instanceof Error ? error.message : 'Unable to save session changes.');
     }
   };
 
@@ -392,7 +398,14 @@ export function WeeksPage() {
     }
   };
 
-  const saving = createSession.isPending || updateSession.isPending || deleteSession.isPending;
+  const saving =
+    createSession.isPending ||
+    updateSession.isPending ||
+    deleteSession.isPending ||
+    replaceAssignments.isPending ||
+    generateMatches.isPending;
+
+  const initialAttendees = useMemo(() => getAssignmentAttendees(typedAssignments), [typedAssignments]);
 
   return (
     <div className="admin-page">
@@ -400,7 +413,7 @@ export function WeeksPage() {
         <div>
           <h1>Weeks & Matches</h1>
           <p className="weeks-page__subtitle">
-            Create weekly sessions, assign players, and preview balanced court groupings.
+            Build weekly rosters and automatically generate rotating doubles matches.
           </p>
         </div>
         <Button variant="primary" onClick={handleCreateSession} disabled={!season?.id || saving}>
@@ -447,7 +460,6 @@ export function WeeksPage() {
                     </div>
                     <div className="weeks-session-card__meta">
                       <span>{new Date(sessionItem.session_date).toLocaleDateString()}</span>
-                      <span>{sessionItem.attendees?.length ?? 0} players</span>
                     </div>
                   </button>
                 ))
@@ -460,7 +472,7 @@ export function WeeksPage() {
               <div className="weeks-editor__header">
                 <div>
                   <h2>{selectedSession ? `Week ${selectedSession.week_number}` : 'Select a session'}</h2>
-                  <p>Configure the session details and roster.</p>
+                  <p>Configure the session, assign players, and auto-generate the match slate.</p>
                 </div>
               </div>
 
@@ -469,9 +481,10 @@ export function WeeksPage() {
                   <p className="weeks-muted">Loading confirmed players...</p>
                 ) : (
                   <SessionEditor
-                    key={selectedSession.id}
+                    key={`${selectedSession.id}-${initialAttendees.join('-')}`}
                     selectedSession={selectedSession}
                     playerPool={playerPool}
+                    initialAttendees={initialAttendees}
                     saveMessage={saveMessage}
                     saving={saving}
                     onDelete={handleDeleteSession}

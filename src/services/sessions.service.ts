@@ -19,7 +19,6 @@ export const sessionService = {
           week_number: session.weekNumber,
           session_date: session.sessionDate.toISOString(),
           status: session.status,
-          attendees: session.attendees,
         },
       ])
       .select()
@@ -71,7 +70,6 @@ export const sessionService = {
         ...(updates.weekNumber !== undefined && { week_number: updates.weekNumber }),
         ...(updates.sessionDate && { session_date: updates.sessionDate.toISOString() }),
         ...(updates.status && { status: updates.status }),
-        ...(updates.attendees && { attendees: updates.attendees }),
       })
       .eq('id', id)
       .select()

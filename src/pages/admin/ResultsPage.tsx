@@ -4,129 +4,61 @@
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../lib/supabase';
+import { useRecordMatchResult, useScorecardMatches } from '../../hooks';
 import Button from '../../components/ui/Button';
+import type { MatchScorecardRow } from '../../services/matches.service';
 import './ResultsPage.css';
 
-interface Match {
-  id: string;
-  season_id: string;
-  player1_id: string;
-  player2_id: string;
-  player1_name: string;
-  player2_name: string;
-  player1_score?: number;
-  player2_score?: number;
-  winner?: 'player1' | 'player2' | 'draw' | null;
-  status: 'scheduled' | 'in_progress' | 'completed' | 'canceled';
-  played_at?: string;
-  scheduled_for: string;
-  court?: number;
-  notes?: string;
-}
-
 export function ResultsPage() {
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [player1Score, setPlayer1Score] = useState('');
-  const [player2Score, setPlayer2Score] = useState('');
-  const [winner, setWinner] = useState<'player1' | 'player2' | 'draw' | ''>('');
-  const [saving, setSaving] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState<MatchScorecardRow | null>(null);
+  const [team1Score, setTeam1Score] = useState('');
+  const [team2Score, setTeam2Score] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const recordResult = useRecordMatchResult();
 
-  // Fetch scheduled/in-progress matches
-  const { data: matches, isLoading, refetch } = useQuery({
-    queryKey: ['matches', 'scorecard'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('matches')
-        .select(`
-          *,
-          player1:player1_id(first_name, last_name),
-          player2:player2_id(first_name, last_name)
-        `)
-        .in('status', ['scheduled', 'in_progress', 'completed'])
-        .order('scheduled_for', { ascending: false })
-        .limit(20);
+  const { data: matches = [], isLoading, refetch } = useScorecardMatches();
 
-      if (error) throw error;
-
-      // Format the response
-      return (data || []).map((match: any) => ({
-        id: match.id,
-        season_id: match.season_id,
-        player1_id: match.player1_id,
-        player2_id: match.player2_id,
-        player1_name: match.player1?.first_name + ' ' + match.player1?.last_name,
-        player2_name: match.player2?.first_name + ' ' + match.player2?.last_name,
-        player1_score: match.player1_score,
-        player2_score: match.player2_score,
-        winner: match.winner,
-        status: match.status,
-        played_at: match.played_at,
-        scheduled_for: match.scheduled_for,
-        court: match.court,
-        notes: match.notes,
-      }));
-    },
-  });
-
-  const handleSelectMatch = (match: Match) => {
+  const handleSelectMatch = (match: MatchScorecardRow) => {
     setSelectedMatch(match);
-    setPlayer1Score(match.player1_score?.toString() || '');
-    setPlayer2Score(match.player2_score?.toString() || '');
-    setWinner(match.winner || '');
+    setTeam1Score(match.team1Score > 0 ? match.team1Score.toString() : '');
+    setTeam2Score(match.team2Score > 0 ? match.team2Score.toString() : '');
     setError('');
     setSuccess('');
   };
 
   const handleSubmitResult = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedMatch || !winner) {
-      setError('Please select a winner');
+    if (!selectedMatch) {
+      setError('Please select a match');
       return;
     }
 
-    setSaving(true);
     setError('');
     setSuccess('');
 
     try {
-      const p1Score = parseInt(player1Score, 10);
-      const p2Score = parseInt(player2Score, 10);
+      const parsedTeam1Score = parseInt(team1Score, 10);
+      const parsedTeam2Score = parseInt(team2Score, 10);
 
-      if (isNaN(p1Score) || isNaN(p2Score)) {
+      if (isNaN(parsedTeam1Score) || isNaN(parsedTeam2Score)) {
         throw new Error('Please enter valid scores');
       }
 
-      // Update match result
-      const { error: updateError } = await supabase
-        .from('matches')
-        .update({
-          status: 'completed',
-          player1_score: p1Score,
-          player2_score: p2Score,
-          winner,
-          played_at: new Date().toISOString(),
-        })
-        .eq('id', selectedMatch.id);
+      await recordResult.mutateAsync({
+        matchId: selectedMatch.id,
+        team1Score: parsedTeam1Score,
+        team2Score: parsedTeam2Score,
+      });
 
-      if (updateError) throw updateError;
-
-      // Update standings (this would typically be done via a Supabase function)
-      // For now, just update the match
-      setSuccess('Match result recorded successfully!');
+      setSuccess('Match result recorded and standings synced.');
       setSelectedMatch(null);
-      setPlayer1Score('');
-      setPlayer2Score('');
-      setWinner('');
+      setTeam1Score('');
+      setTeam2Score('');
       refetch();
     } catch (err) {
       console.error('Error saving result:', err);
       setError(err instanceof Error ? err.message : 'Failed to save result');
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -164,29 +96,26 @@ export function ResultsPage() {
 
                   <div className="results-card__matchup">
                     <div className="results-card__player">
-                      <span className="player-name">{match.player1_name}</span>
-                      {match.player1_score !== undefined && (
-                        <span className="player-score">{match.player1_score}</span>
+                      <span className="player-name">{match.team1Names.join(' / ')}</span>
+                      {match.status === 'completed' && (
+                        <span className="player-score">{match.team1Score}</span>
                       )}
                     </div>
 
                     <div className="results-card__vs">vs</div>
 
                     <div className="results-card__player">
-                      <span className="player-name">{match.player2_name}</span>
-                      {match.player2_score !== undefined && (
-                        <span className="player-score">{match.player2_score}</span>
+                      <span className="player-name">{match.team2Names.join(' / ')}</span>
+                      {match.status === 'completed' && (
+                        <span className="player-score">{match.team2Score}</span>
                       )}
                     </div>
                   </div>
 
                   <div className="results-card__meta">
-                    <span className="meta-item">
-                      {new Date(match.scheduled_for).toLocaleDateString()}
-                    </span>
-                    {match.court && (
-                      <span className="meta-item">Court {match.court}</span>
-                    )}
+                    <span className="meta-item">Week {match.weekNumber}</span>
+                    <span className="meta-item">Set {match.setNumber}</span>
+                    <span className="meta-item">Court {match.courtNumber}</span>
                   </div>
                 </div>
               ))}
@@ -209,16 +138,21 @@ export function ResultsPage() {
                   <div className="player-card">
                     <div className="player-number">1</div>
                     <div className="player-info">
-                      <p className="player-name">{selectedMatch.player1_name}</p>
+                      <p className="player-name">{selectedMatch.team1Names.join(' / ')}</p>
                     </div>
                   </div>
                   <div className="player-vs">VS</div>
                   <div className="player-card">
                     <div className="player-number">2</div>
                     <div className="player-info">
-                      <p className="player-name">{selectedMatch.player2_name}</p>
+                      <p className="player-name">{selectedMatch.team2Names.join(' / ')}</p>
                     </div>
                   </div>
+                </div>
+                <div className="results-card__meta">
+                  <span className="meta-item">Week {selectedMatch.weekNumber}</span>
+                  <span className="meta-item">Set {selectedMatch.setNumber}</span>
+                  <span className="meta-item">Court {selectedMatch.courtNumber}</span>
                 </div>
               </div>
 
@@ -228,53 +162,26 @@ export function ResultsPage() {
               <form onSubmit={handleSubmitResult} className="results-form">
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Player 1 Score</label>
+                    <label>Team 1 Score</label>
                     <input
                       type="number"
                       min="0"
-                      value={player1Score}
-                      onChange={(e) => setPlayer1Score(e.target.value)}
+                      value={team1Score}
+                      onChange={(e) => setTeam1Score(e.target.value)}
                       placeholder="0"
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label>Player 2 Score</label>
+                    <label>Team 2 Score</label>
                     <input
                       type="number"
                       min="0"
-                      value={player2Score}
-                      onChange={(e) => setPlayer2Score(e.target.value)}
+                      value={team2Score}
+                      onChange={(e) => setTeam2Score(e.target.value)}
                       placeholder="0"
                       required
                     />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>Winner</label>
-                  <div className="winner-buttons">
-                    <button
-                      type="button"
-                      className={`winner-btn ${winner === 'player1' ? 'winner-btn--selected' : ''}`}
-                      onClick={() => setWinner('player1')}
-                    >
-                      {selectedMatch.player1_name}
-                    </button>
-                    <button
-                      type="button"
-                      className={`winner-btn ${winner === 'draw' ? 'winner-btn--selected' : ''}`}
-                      onClick={() => setWinner('draw')}
-                    >
-                      Draw
-                    </button>
-                    <button
-                      type="button"
-                      className={`winner-btn ${winner === 'player2' ? 'winner-btn--selected' : ''}`}
-                      onClick={() => setWinner('player2')}
-                    >
-                      {selectedMatch.player2_name}
-                    </button>
                   </div>
                 </div>
 
@@ -282,15 +189,15 @@ export function ResultsPage() {
                   <Button
                     type="submit"
                     variant="primary"
-                    disabled={saving}
+                    disabled={recordResult.isPending}
                   >
-                    {saving ? 'Saving...' : 'Save Result'}
+                    {recordResult.isPending ? 'Saving...' : 'Save Result'}
                   </Button>
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => setSelectedMatch(null)}
-                    disabled={saving}
+                    disabled={recordResult.isPending}
                   >
                     Cancel
                   </Button>

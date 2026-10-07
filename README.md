@@ -152,6 +152,10 @@ STRIPE_SECRET_KEY=sk_test_YOUR_KEY
 SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY
 FRONTEND_URL=http://localhost:5173
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=200
+PAYMENT_RATE_LIMIT_MAX_REQUESTS=20
+NOTIFICATION_RATE_LIMIT_MAX_REQUESTS=10
 ```
 
 ## 🗂️ Project Structure
@@ -203,13 +207,14 @@ FRONTEND_URL=http://localhost:5173
 - ✅ Protected admin routes
 - ✅ Stripe webhook signature verification
 - ✅ CORS headers configured
+- ✅ Backend rate limiting on public API routes
 - ✅ TypeScript strict mode (prevents type issues)
 - ✅ Environment variable protection
 - ✅ Production RLS script in [supabase/rls_setup.sql](supabase/rls_setup.sql)
 
 ### Roadmap
 - [ ] Apply RLS script in Supabase project
-- [ ] Rate limiting
+- [x] Rate limiting
 - [ ] 2FA for admin accounts
 - [ ] Audit logging
 - [ ] Data encryption at rest
@@ -313,7 +318,8 @@ Notes:
 5. Verify `GET /health/ready` returns `ready`
 6. Deploy frontend with production `VITE_BACKEND_URL`
 7. Configure Stripe webhook to `POST /webhooks/stripe`
-8. Run smoke tests for registration, payment, waitlist, admin login, and results entry
+8. Tune backend rate limits for production traffic
+9. Run smoke tests for registration, payment, waitlist, admin login, and results entry
 
 ## 🎯 Next Steps (Recommended)
 

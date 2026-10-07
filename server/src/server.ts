@@ -5,18 +5,43 @@ import { paymentRouter } from './routes/payment.routes';
 import { webhookRouter } from './routes/webhook.routes';
 import { healthRouter } from './routes/health.routes';
 import { notificationRouter } from './routes/notification.routes';
+import { apiRateLimiter, notificationRateLimiter, paymentRateLimiter } from './rate-limit';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.disable('x-powered-by');
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 // Middleware
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Origin not allowed by CORS'));
+  },
   credentials: true,
 }));
+
+app.use((_, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
 
 // Stripe requires the raw request body for webhook signature verification.
 app.use('/webhooks', webhookRouter);
@@ -29,8 +54,9 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/health', healthRouter);
 
 // API Routes
-app.use('/api/payments', paymentRouter);
-app.use('/api/notifications', notificationRouter);
+app.use('/api', apiRateLimiter);
+app.use('/api/payments', paymentRateLimiter, paymentRouter);
+app.use('/api/notifications', notificationRateLimiter, notificationRouter);
 
 // 404 handler
 app.use((req, res) => {
@@ -55,7 +81,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 RALYX Backend running on port ${PORT}`);
-  console.log(`📍 Frontend: ${FRONTEND_URL}`);
+  console.log(`📍 Allowed Frontend Origins: ${allowedOrigins.join(', ')}`);
   console.log(`🔗 Payment API: http://localhost:${PORT}/api/payments`);
   console.log(`🪝 Webhooks: http://localhost:${PORT}/webhooks`);
 });

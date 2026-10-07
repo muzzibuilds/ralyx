@@ -183,6 +183,10 @@ ALTER TABLE registrations ADD COLUMN stripe_payment_intent_id TEXT;
 | `RESEND_API_KEY` | No | Resend API key for transactional emails |
 | `EMAIL_FROM` | No | Sender identity for league emails |
 | `SUPPORT_EMAIL` | No | Reply-to/support address used in emails |
+| `RATE_LIMIT_WINDOW_MS` | No | Global rate-limit window in milliseconds |
+| `RATE_LIMIT_MAX_REQUESTS` | No | Max API requests per IP per window |
+| `PAYMENT_RATE_LIMIT_MAX_REQUESTS` | No | Max payment requests per IP per window |
+| `NOTIFICATION_RATE_LIMIT_MAX_REQUESTS` | No | Max notification requests per IP per window |
 
 ## 🧪 Testing with Stripe
 
@@ -240,6 +244,11 @@ docker run --env-file ./server/.env -p 3001:3001 ralyx-backend
 - `GET /health` - liveness
 - `GET /health/ready` - readiness / env validation
 
+### Security Controls
+- CORS origin allowlist via `FRONTEND_URL` (comma-separated values supported)
+- IP-based rate limiting on `/api/*`, with stricter limits on payment and notification routes
+- Response hardening headers for content type sniffing, frames, and referrer policy
+
 ### Environment for Production
 1. Set all required environment variables
 2. Use production Stripe keys (sk_live_...)
@@ -249,6 +258,7 @@ docker run --env-file ./server/.env -p 3001:3001 ralyx-backend
 6. Add Resend credentials to enable transactional emails
 7. Point Stripe webhooks to `/webhooks/stripe`
 8. Verify `/health/ready` before routing traffic
+9. Tune rate-limit environment values for your traffic profile
 
 ## 🐛 Debugging
 

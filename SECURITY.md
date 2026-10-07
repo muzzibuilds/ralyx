@@ -389,7 +389,7 @@ const allRegistrations = await supabase
 - [ ] Email notifications configured
 - [ ] Backup routine scheduled
 - [ ] Monitoring alerts set up
-- [ ] Rate limiting configured
+- [x] Rate limiting configured
 
 ### Production
 
@@ -399,6 +399,13 @@ const allRegistrations = await supabase
 - [ ] Regular security updates
 - [ ] Intrusion detection monitoring
 - [ ] Data retention policies
+
+### Backend Runtime Controls
+
+- API traffic is rate limited at the Express layer.
+- Payment and notification endpoints use tighter per-IP limits than the rest of the API.
+- `FRONTEND_URL` supports a comma-separated allowlist for multi-environment CORS.
+- Readiness checks are exposed on `/health/ready` for deployment gating.
 
 ## Security Contacts & Incident Response
 

@@ -2,7 +2,7 @@
  * Registration Page
  * Player registration form flow with payment processing
  * 
- * Phase 6: Added Stripe payment processing after form confirmation
+ * Phase 6B: Real Stripe payment integration with backend API
  */
 
 import { useState } from 'react';
@@ -11,13 +11,15 @@ import RegistrationForm from '../components/RegistrationForm';
 import RegistrationSuccess from '../components/RegistrationSuccess';
 import WaitlistSuccess from '../components/WaitlistSuccess';
 import PaymentConfirm from '../components/PaymentConfirm';
+import StripeCheckout from '../components/StripeCheckout';
+import StripeProvider from '../components/StripeProvider';
 import { useCurrentSeason } from '../hooks/useSeason';
 import { useConfirmedCount } from '../hooks/useRegistration';
 import { useCreateRegistration } from '../hooks/useRegistration';
 import { useCreateDemandLead } from '../hooks/useDemand';
 import { playerService } from '../services/players.service';
 import { demandService } from '../services/demand.service';
-import { generateInvoiceData } from '../services/stripeService';
+import { generateInvoiceData, calculateRegistrationFee } from '../services/stripeService';
 import type { RegistrationFormData } from '../components/RegistrationForm';
 import './Register.css';
 
@@ -111,8 +113,10 @@ export default function RegisterPage() {
   };
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
-    // Note: For production, this would handle actual Stripe payment response
+    // Handle successful Stripe payment
     if (!pendingRegistration || !currentSeason) {
+      setPaymentError('Registration data missing');
+      setPaymentStatus('error');
       return;
     }
 
@@ -120,10 +124,29 @@ export default function RegisterPage() {
       setPaymentStatus('processing');
       const { formData, playerId } = pendingRegistration;
 
-      // Simulate payment processing delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get registration ID that was created
+      // For now, use a placeholder - in production this comes from the form submission
+      const registrationId = `reg_${playerId}`;
 
-      // Create registration (payment intent ID would be included in production)
+      // Confirm payment with backend
+      const confirmResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/payments/confirm`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentIntentId,
+            registrationId,
+          }),
+        }
+      );
+
+      if (!confirmResponse.ok) {
+        const error = await confirmResponse.json();
+        throw new Error(error.message || 'Payment confirmation failed');
+      }
+
+      // Create registration in our database (if not already created)
       await createRegistration.mutateAsync({
         playerId: playerId!,
         seasonId: currentSeason.id,
@@ -131,7 +154,7 @@ export default function RegisterPage() {
         registeredAt: new Date(),
       });
 
-      // Update pending registration with success
+      // Update state for success
       setPendingRegistration({
         ...pendingRegistration,
         paymentIntentId,
@@ -144,12 +167,12 @@ export default function RegisterPage() {
         seasonName: currentSeason.name,
       });
 
-      // Auto-transition to success after 2 seconds
+      // Auto-transition to success after 3 seconds
       setTimeout(() => {
         setState('success');
-      }, 2000);
+      }, 3000);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to complete registration';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to complete registration after payment';
       setPaymentError(errorMessage);
       setPaymentStatus('error');
     }
@@ -220,27 +243,23 @@ export default function RegisterPage() {
             <h1>SECURE YOUR REGISTRATION</h1>
             <p className="register-subtitle">Complete payment to confirm your spot</p>
 
-            <PaymentConfirm
-              status="success"
-              amount={5000} // $50.00 in cents
-              email={pendingRegistration.formData.email}
-              firstName={pendingRegistration.formData.firstName}
-              lastName={pendingRegistration.formData.lastName}
-              paymentIntentId={`pi_demo_${Math.random().toString(36).substr(2, 9)}`}
-              invoiceData={
-                generateInvoiceData(
-                  5000,
-                  `${pendingRegistration.formData.firstName} ${pendingRegistration.formData.lastName}`,
-                  pendingRegistration.formData.email,
-                  pendingRegistration.formData.duprProfileUrl
-                )
-              }
-              onContinue={() => handlePaymentSuccess(`pi_demo_${Math.random().toString(36).substr(2, 9)}`)}
-              isLoading={createRegistration.isPending}
-            />
+            <StripeProvider>
+              <StripeCheckout
+                amount={calculateRegistrationFee()}
+                email={pendingRegistration.formData.email}
+                firstName={pendingRegistration.formData.firstName}
+                lastName={pendingRegistration.formData.lastName}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={(error) => {
+                  setPaymentError(error);
+                  setPaymentStatus('error');
+                }}
+                isProcessing={createRegistration.isPending}
+              />
+            </StripeProvider>
 
-            <p className="payment-disabled-note">
-              💳 Demo Payment: In production, this will integrate with Stripe for real payment processing.
+            <p className="payment-note">
+              🔒 Your card information is encrypted and secure. We never store full card details.
             </p>
           </div>
         )}

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import type { StripeCheckoutProps } from '../types/stripe';
-import { formatCurrency, calculateRegistrationFee } from '../services/stripeService';
+import { formatCurrency, calculateRegistrationFee, createPaymentIntent } from '../services/stripeService';
 import './StripeCheckout.css';
 
 /**
  * Stripe Checkout Form Component
- * Handles payment processing with Stripe Card Element
+ * Handles payment processing with Stripe Card Element and backend integration
  */
 export function StripeCheckout({
   amount,
@@ -21,6 +21,30 @@ export function StripeCheckout({
   const elements = useElements();
   const [cardError, setCardError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // Create payment intent on mount
+  useEffect(() => {
+    const setupPayment = async () => {
+      try {
+        const displayAmount = amount > 0 ? amount : calculateRegistrationFee();
+        const paymentData = await createPaymentIntent(
+          displayAmount,
+          email,
+          firstName,
+          lastName
+        );
+        
+        setClientSecret(paymentData.clientSecret);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to initialize payment';
+        setCardError(errorMessage);
+        onPaymentError(errorMessage);
+      }
+    };
+
+    setupPayment();
+  }, [amount, email, firstName, lastName, onPaymentError]);
 
   const handleCardChange = (event: any) => {
     if (event.error) {
@@ -33,9 +57,10 @@ export function StripeCheckout({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!stripe || !elements) {
-      setCardError('Stripe not loaded. Please refresh the page.');
-      onPaymentError('Stripe not loaded');
+    if (!stripe || !elements || !clientSecret) {
+      const msg = 'Payment system not ready. Please refresh the page.';
+      setCardError(msg);
+      onPaymentError(msg);
       return;
     }
 
@@ -54,13 +79,14 @@ export function StripeCheckout({
     setIsLoading(true);
 
     try {
-      // Create payment method
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
-        billing_details: {
-          email,
-          name: `${firstName} ${lastName}`
+      // Confirm card payment
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            email,
+            name: `${firstName} ${lastName}`
+          }
         }
       });
 
@@ -71,52 +97,16 @@ export function StripeCheckout({
         return;
       }
 
-      // Create payment intent on backend
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount,
-          email,
-          paymentMethodId: paymentMethod?.id,
-          metadata: {
-            firstName,
-            lastName,
-            email
-          }
-        })
-      }).catch(() => {
-        // Mock response for demo/development
-        return new Response(JSON.stringify({
-          clientSecret: `pi_test_${Math.random().toString(36).substr(2, 9)}`,
-          paymentIntentId: `pi_${Math.random().toString(36).substr(2, 9)}`
-        }), { status: 200 });
-      });
-
-      const { clientSecret, paymentIntentId } = await response.json();
-
-      if (!clientSecret) {
-        setCardError('Failed to create payment. Please try again.');
-        onPaymentError('Failed to create payment intent');
+      if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+        setCardError('Payment was not processed. Please try again.');
+        onPaymentError('Payment status unclear');
         setIsLoading(false);
         return;
       }
 
-      // Confirm payment
-      const { error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: paymentMethod?.id
-      });
-
-      if (confirmError) {
-        setCardError(confirmError.message || 'Payment confirmation failed');
-        onPaymentError(confirmError.message || 'Payment confirmation failed');
-        setIsLoading(false);
-        return;
-      }
-
-      // Success
+      // Success - pass payment intent ID to parent
       setCardError('');
-      onPaymentSuccess(paymentIntentId);
+      onPaymentSuccess(paymentIntent.id);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Payment processing failed';
       setCardError(errorMessage);

@@ -1,61 +1,83 @@
 import type { PaymentIntentResponse, PaymentResult, InvoiceData, InvoiceItem } from '../types/stripe';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
 /**
- * Create a payment intent for registration
- * This is normally done server-side for security
- * For demo purposes, this shows the client-side pattern
+ * Create a payment intent for registration via backend API
  */
 export async function createPaymentIntent(
-  amount: number
+  amount: number,
+  email: string,
+  firstName: string,
+  lastName: string,
+  registrationId?: string
 ): Promise<PaymentIntentResponse> {
   try {
-    // In production, call your backend endpoint instead
-    // const response = await fetch('/api/create-payment-intent', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ amount, metadata })
-    // });
-    
-    // For now, we'll simulate the response
-    // Your backend should create this via Stripe API
+    const response = await fetch(`${BACKEND_URL}/api/payments/create-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount,
+        email,
+        firstName,
+        lastName,
+        registrationId,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create payment intent');
+    }
+
+    const data = await response.json();
     return {
-      clientSecret: `pi_test_${generateMockSecret()}`,
-      amount,
-      currency: 'usd',
-      status: 'requires_payment_method'
+      clientSecret: data.clientSecret,
+      amount: data.amount,
+      currency: data.currency,
+      status: data.status,
     };
   } catch (error) {
-    throw new Error(`Failed to create payment intent: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Payment setup failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
 /**
- * Confirm payment with Stripe
- * @param paymentIntentId - The payment intent ID
- * @returns Payment confirmation
+ * Confirm payment with backend API
  */
 export async function confirmPayment(
-  paymentIntentId: string
+  paymentIntentId: string,
+  registrationId: string
 ): Promise<PaymentResult> {
   try {
-    // Call your backend to confirm payment
-    // const response = await fetch('/api/confirm-payment', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ paymentIntentId })
-    // });
-    
+    const response = await fetch(`${BACKEND_URL}/api/payments/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        paymentIntentId,
+        registrationId,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: error.message || 'Payment confirmation failed',
+      };
+    }
+
+    const data = await response.json();
     return {
       success: true,
-      paymentIntentId,
-      status: 'succeeded'
+      paymentIntentId: data.paymentIntentId,
+      status: 'succeeded',
     };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -131,13 +153,6 @@ export function getStripePublicKey(): string {
     throw new Error('Stripe public key is not configured in environment variables');
   }
   return STRIPE_PUBLIC_KEY;
-}
-
-/**
- * Mock secret generation for testing (remove in production)
- */
-function generateMockSecret(): string {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 /**

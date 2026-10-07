@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { paymentRouter } from './routes/payment.routes';
 import { webhookRouter } from './routes/webhook.routes';
 import { healthRouter } from './routes/health.routes';
+import { notificationRouter } from './routes/notification.routes';
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ app.use(cors({
   credentials: true,
 }));
 
+// Stripe requires the raw request body for webhook signature verification.
+app.use('/webhooks', webhookRouter);
+
 // Parse JSON with size limit
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -26,7 +30,7 @@ app.use('/health', healthRouter);
 
 // API Routes
 app.use('/api/payments', paymentRouter);
-app.use('/webhooks', webhookRouter);
+app.use('/api/notifications', notificationRouter);
 
 // 404 handler
 app.use((req, res) => {
@@ -38,7 +42,7 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   
   res.status(err.statusCode || 500).json({

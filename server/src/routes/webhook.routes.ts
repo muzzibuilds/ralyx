@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import { constructWebhookEvent } from '../stripe.config';
+import { sendRegistrationConfirmationForPaymentIntent } from '../email';
 import { 
   updatePaymentByStripeIntentId, 
   updateRegistrationPaymentStatus
@@ -54,6 +55,8 @@ webhookRouter.post('/stripe', express.raw({ type: 'application/json' }), async (
           );
           console.log(`📝 Registration ${paymentIntent.metadata.registrationId} marked as paid`);
         }
+
+        await sendRegistrationConfirmationForPaymentIntent(paymentIntent.id);
 
         break;
       }

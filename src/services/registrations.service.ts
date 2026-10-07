@@ -46,6 +46,21 @@ export const registrationService = {
   },
 
   /**
+   * Get registration by player and season
+   */
+  async getRegistrationByPlayerAndSeason(playerId: string, seasonId: string) {
+    const { data, error } = await supabase
+      .from('registrations')
+      .select('*')
+      .eq('player_id', playerId)
+      .eq('season_id', seasonId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
    * Get registrations by season
    */
   async getRegistrationsBySeason(seasonId: string, status?: RegistrationStatus) {

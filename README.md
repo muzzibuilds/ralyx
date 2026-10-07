@@ -299,9 +299,9 @@ git push heroku main
 - Conflict resolution
 
 ### Phase 12: Email Notifications
-- Match confirmations
-- Result notifications
-- Registration receipts
+- Waitlist confirmations
+- Registration confirmation emails
+- Payment receipts / season details
 
 ### Phase 13: Analytics Dashboard
 - Registration metrics

@@ -13,6 +13,7 @@ export function StripeCheckout({
   email,
   firstName,
   lastName,
+  registrationId,
   onPaymentSuccess,
   onPaymentError,
   isProcessing = false
@@ -32,7 +33,8 @@ export function StripeCheckout({
           displayAmount,
           email,
           firstName,
-          lastName
+          lastName,
+          registrationId
         );
         
         setClientSecret(paymentData.clientSecret);
@@ -44,7 +46,7 @@ export function StripeCheckout({
     };
 
     setupPayment();
-  }, [amount, email, firstName, lastName, onPaymentError]);
+  }, [amount, email, firstName, lastName, onPaymentError, registrationId]);
 
   const handleCardChange = (event: any) => {
     if (event.error) {

@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Container, Section } from '../components/ui';
 import RegistrationForm from '../components/RegistrationForm';
 import RegistrationSuccess from '../components/RegistrationSuccess';
@@ -19,7 +20,8 @@ import { useCreateRegistration } from '../hooks/useRegistration';
 import { useCreateDemandLead } from '../hooks/useDemand';
 import { playerService } from '../services/players.service';
 import { demandService } from '../services/demand.service';
-import { generateInvoiceData, calculateRegistrationFee } from '../services/stripeService';
+import { registrationService } from '../services/registrations.service';
+import { confirmPayment, generateInvoiceData, calculateRegistrationFee } from '../services/stripeService';
 import type { RegistrationFormData } from '../components/RegistrationForm';
 import './Register.css';
 
@@ -34,10 +36,14 @@ interface SuccessData {
 interface PendingRegistration {
   formData: RegistrationFormData;
   playerId?: string;
+  registrationId?: string;
   paymentIntentId?: string;
 }
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+
 export default function RegisterPage() {
+  const queryClient = useQueryClient();
   const [state, setState] = useState<RegistrationState>('form');
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
   const [pendingRegistration, setPendingRegistration] = useState<PendingRegistration | null>(null);
@@ -52,6 +58,22 @@ export default function RegisterPage() {
   const createDemandLead = useCreateDemandLead();
 
   const isFull = (confirmedCount ?? 0) >= 16;
+
+  const notifyWaitlistConfirmation = async (formData: RegistrationFormData, seasonName: string) => {
+    try {
+      await fetch(`${BACKEND_URL}/api/notifications/waitlist-confirmation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          email: formData.email,
+          seasonName,
+        }),
+      });
+    } catch (notificationError) {
+      console.warn('Waitlist confirmation email could not be sent:', notificationError);
+    }
+  };
 
   const handleRegistrationSubmit = async (formData: RegistrationFormData) => {
     try {
@@ -72,6 +94,8 @@ export default function RegisterPage() {
           duprRating: formData.duprRating || 0,
           preferredDay: undefined,
         });
+
+        await notifyWaitlistConfirmation(formData, currentSeason.name);
 
         setSuccessData({
           firstName: formData.firstName,
@@ -100,10 +124,29 @@ export default function RegisterPage() {
         playerId = newPlayer.id;
       }
 
+      const existingRegistration = await registrationService.getRegistrationByPlayerAndSeason(
+        playerId,
+        currentSeason.id
+      );
+
+      if (existingRegistration?.status === 'confirmed') {
+        setError('This email is already registered for the current season.');
+        return;
+      }
+
+      const registration = existingRegistration ?? await createRegistration.mutateAsync({
+        playerId,
+        seasonId: currentSeason.id,
+        status: 'payment_pending',
+        registeredAt: new Date(),
+        amount: calculateRegistrationFee() / 100,
+      });
+
       // Store pending registration and move to payment
       setPendingRegistration({
         formData,
         playerId,
+        registrationId: registration.id,
       });
       setState('payment');
     } catch (err) {
@@ -122,37 +165,20 @@ export default function RegisterPage() {
 
     try {
       setPaymentStatus('processing');
-      const { formData, playerId } = pendingRegistration;
+      const { formData, registrationId } = pendingRegistration;
 
-      // Get registration ID that was created
-      // For now, use a placeholder - in production this comes from the form submission
-      const registrationId = `reg_${playerId}`;
-
-      // Confirm payment with backend
-      const confirmResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/payments/confirm`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            paymentIntentId,
-            registrationId,
-          }),
-        }
-      );
-
-      if (!confirmResponse.ok) {
-        const error = await confirmResponse.json();
-        throw new Error(error.message || 'Payment confirmation failed');
+      if (!registrationId) {
+        throw new Error('Registration data missing. Please restart the registration flow.');
       }
 
-      // Create registration in our database (if not already created)
-      await createRegistration.mutateAsync({
-        playerId: playerId!,
-        seasonId: currentSeason.id,
-        status: 'confirmed',
-        registeredAt: new Date(),
-      });
+      const confirmation = await confirmPayment(paymentIntentId, registrationId);
+
+      if (!confirmation.success) {
+        throw new Error(confirmation.error || 'Payment confirmation failed');
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ['registrations', 'count', currentSeason.id] });
+      await queryClient.invalidateQueries({ queryKey: ['registrations', 'season', currentSeason.id] });
 
       // Update state for success
       setPendingRegistration({
@@ -208,6 +234,8 @@ export default function RegisterPage() {
         preferredDay: undefined,
       });
 
+      await notifyWaitlistConfirmation(formData, currentSeason.name);
+
       setSuccessData({
         firstName: formData.firstName,
         email: formData.email,
@@ -249,6 +277,7 @@ export default function RegisterPage() {
                 email={pendingRegistration.formData.email}
                 firstName={pendingRegistration.formData.firstName}
                 lastName={pendingRegistration.formData.lastName}
+                registrationId={pendingRegistration.registrationId}
                 onPaymentSuccess={handlePaymentSuccess}
                 onPaymentError={(error) => {
                   setPaymentError(error);

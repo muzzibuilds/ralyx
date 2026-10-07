@@ -10,7 +10,7 @@ if (!apiKey) {
  * Configured with API version for consistency
  */
 export const stripe = new Stripe(apiKey, {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
   typescript: true,
 });
 

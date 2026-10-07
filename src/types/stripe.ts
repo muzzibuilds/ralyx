@@ -21,6 +21,7 @@ export interface StripeCheckoutProps {
   email: string;
   firstName: string;
   lastName: string;
+  registrationId?: string;
   onPaymentSuccess: (paymentIntentId: string) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;

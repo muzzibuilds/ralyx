@@ -104,6 +104,18 @@ Content-Type: application/json
 }
 ```
 
+### Waitlist Confirmation
+```
+POST /api/notifications/waitlist-confirmation
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "email": "player@example.com",
+  "seasonName": "RALYX Winter 2027"
+}
+```
+
 ## 🪝 Webhooks
 
 ### Stripe Webhooks
@@ -168,6 +180,9 @@ ALTER TABLE registrations ADD COLUMN stripe_payment_intent_id TEXT;
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key |
 | `FRONTEND_URL` | No | Frontend URL for CORS (default: http://localhost:5173) |
 | `SERVER_URL` | No | Server URL for webhooks (default: http://localhost:3001) |
+| `RESEND_API_KEY` | No | Resend API key for transactional emails |
+| `EMAIL_FROM` | No | Sender identity for league emails |
+| `SUPPORT_EMAIL` | No | Reply-to/support address used in emails |
 
 ## 🧪 Testing with Stripe
 
@@ -221,6 +236,7 @@ npm start
 3. Configure CORS origin for production frontend
 4. Set HTTPS for webhook endpoints
 5. Configure proper logging and monitoring
+6. Add Resend credentials to enable transactional emails
 
 ## 🐛 Debugging
 
@@ -242,7 +258,7 @@ All webhooks are logged with timestamps. Monitor the console for event processin
 - All amounts in cents ($50 = 5000 cents)
 - Service role key required for database writes (backend only)
 - Webhook signature verification is required for security
-- Remember to update registrations when payments succeed
+- Registration confirmation emails are sent from the backend when `RESEND_API_KEY` is configured
 
 ## 🤝 Contributing
 

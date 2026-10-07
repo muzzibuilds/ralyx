@@ -45,9 +45,9 @@ export function RegistrationSuccess({
           </div>
 
           <div className="registration-success__detail">
-            <span className="registration-success__detail-label">Payment Due</span>
+            <span className="registration-success__detail-label">Payment Status</span>
             <span className="registration-success__detail-value">
-              Payment information will be sent to your email.
+              Paid and confirmed. Your receipt and season details are on the way.
             </span>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { createPaymentIntentForRegistration, getPaymentIntent } from '../stripe.config';
 import { createPayment, updateRegistrationPaymentStatus } from '../supabase';
+import { sendRegistrationConfirmationForPaymentIntent } from '../email';
 
 export const paymentRouter = Router();
 
@@ -160,6 +161,8 @@ paymentRouter.post('/confirm', express.json(), async (req, res) => {
       registrationId,
       'paid'
     );
+
+    await sendRegistrationConfirmationForPaymentIntent(paymentIntentId);
 
     res.json({
       success: true,

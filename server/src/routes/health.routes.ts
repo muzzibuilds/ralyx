@@ -6,7 +6,7 @@ export const healthRouter = Router();
  * Health check endpoint
  * GET /health
  */
-healthRouter.get('/', (req, res) => {
+healthRouter.get('/', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),

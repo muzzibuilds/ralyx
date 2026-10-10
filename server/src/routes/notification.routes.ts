@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { emailNotificationsEnabled, sendWaitlistConfirmationEmail } from '../email';
+import { emailNotificationsEnabled, sendWaitlistConfirmationEmail } from '../email.js';
 
 export const notificationRouter = Router();
 

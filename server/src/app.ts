@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { paymentRouter } from './routes/payment.routes';
-import { webhookRouter } from './routes/webhook.routes';
-import { healthRouter } from './routes/health.routes';
-import { notificationRouter } from './routes/notification.routes';
-import { apiRateLimiter, notificationRateLimiter, paymentRateLimiter } from './rate-limit';
+import { paymentRouter } from './routes/payment.routes.js';
+import { webhookRouter } from './routes/webhook.routes.js';
+import { healthRouter } from './routes/health.routes.js';
+import { notificationRouter } from './routes/notification.routes.js';
+import { apiRateLimiter, notificationRateLimiter, paymentRateLimiter } from './rate-limit.js';
 
 dotenv.config();
 

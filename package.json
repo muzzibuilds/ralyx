@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "postinstall": "npm --prefix server install",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -1,10 +1,10 @@
 import express, { Router } from 'express';
-import { constructWebhookEvent } from '../stripe.config';
-import { sendRegistrationConfirmationForPaymentIntent } from '../email';
+import { constructWebhookEvent } from '../stripe.config.js';
+import { sendRegistrationConfirmationForPaymentIntent } from '../email.js';
 import { 
   updatePaymentByStripeIntentId, 
   updateRegistrationPaymentStatus
-} from '../supabase';
+} from '../supabase.js';
 
 export const webhookRouter = Router();
 

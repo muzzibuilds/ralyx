@@ -5,7 +5,7 @@ import {
   getRegistration,
   getSeason,
   markPaymentNotificationSent,
-} from './supabase';
+} from './supabase.js';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM || 'RALYX <noreply@ralyx.app>';

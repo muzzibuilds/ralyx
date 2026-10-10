@@ -1,4 +1,4 @@
-import app, { getAllowedOrigins } from './app';
+import app, { getAllowedOrigins } from './app.js';
 
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = getAllowedOrigins();

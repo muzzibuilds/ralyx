@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
-import { createPaymentIntentForRegistration, getPaymentIntent } from '../stripe.config';
-import { createPayment, updateRegistrationPaymentStatus } from '../supabase';
-import { sendRegistrationConfirmationForPaymentIntent } from '../email';
+import { createPaymentIntentForRegistration, getPaymentIntent } from '../stripe.config.js';
+import { createPayment, updateRegistrationPaymentStatus } from '../supabase.js';
+import { sendRegistrationConfirmationForPaymentIntent } from '../email.js';
 
 export const paymentRouter = Router();
 

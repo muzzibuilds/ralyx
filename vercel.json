@@ -6,15 +6,23 @@
   },
   "rewrites": [
     {
-      "source": "/webhooks/(.*)",
-      "destination": "/api/webhooks/$1"
+      "source": "/webhooks",
+      "destination": "/api/webhooks"
     },
     {
-      "source": "/health/(.*)",
-      "destination": "/api/health/$1"
+      "source": "/webhooks/:path*",
+      "destination": "/api/webhooks/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/health/:path*",
+      "destination": "/api/health/:path*"
+    },
+    {
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
